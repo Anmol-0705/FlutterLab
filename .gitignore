@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+Thumbs.db
+/Flutter Lap 1203 ex1.docx
+~$*
