@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flutter Lab - Experiments 1 to 12 | Anmol-0705</title>
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6750A4;
+      --primary-container: #EADDFF;
+      --on-primary: #FFFFFF;
+      --surface: #FEF7FF;
+      --surface-variant: #E7E0EC;
+      --background: #F4F5F9;
+      --card-bg: #FFFFFF;
+      --text-main: #1D1B20;
+      --text-sub: #49454F;
+      --border: #CAC4D0;
+      --sidebar-width: 310px;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--background);
+      color: var(--text-main);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: #FFFFFF;
+      border-right: 1px solid #E0E2EC;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid #E0E2EC;
+      background: linear-gradient(135deg, #6750A4 0%, #4F378B 100%);
+      color: white;
+    }
+    .sidebar-header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sidebar-header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 5px;
+    }
+    .exp-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .exp-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      margin-bottom: 6px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .exp-item:hover {
+      background: #F2EEFB;
+    }
+    .exp-item.active {
+      background: var(--primary-container);
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .exp-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #ECE6F0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+    .exp-item.active .exp-badge {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Main Container */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .top-bar {
+      height: 64px;
+      background: #FFFFFF;
+      border-bottom: 1px solid #E0E2EC;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    .top-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-title h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    .top-links {
+      display: flex;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-outline {
+      border-color: var(--border);
+      color: var(--text-main);
+      background: white;
+    }
+    .btn-outline:hover {
+      background: #F4F5F9;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #4F378B;
+    }
+
+    /* Tabs & Content Area */
+    .content-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    .preview-pane {
+      flex: 1.2;
+      background: #EEF1F6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .device-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: white;
+      padding: 4px;
+      border-radius: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .device-btn {
+      padding: 6px 14px;
+      border: none;
+      background: transparent;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .device-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Device Mockup Frame */
+    .device-frame {
+      background: white;
+      border-radius: 36px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+      border: 10px solid #1E1E24;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .device-mobile {
+      width: 380px;
+      height: 720px;
+    }
+    .device-tablet {
+      width: 650px;
+      height: 720px;
+    }
+    .device-desktop {
+      width: 100%;
+      max-width: 900px;
+      height: 720px;
+      border-radius: 16px;
+      border: 2px solid #D0D4DC;
+    }
+    .status-bar {
+      height: 28px;
+      background: #000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      user-select: none;
+    }
+    .screen-content {
+      flex: 1;
+      overflow-y: auto;
+      background: #FAFAFA;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Details / Code Pane */
+    .info-pane {
+      flex: 1;
+      border-left: 1px solid #E0E2EC;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .info-tabs {
+      display: flex;
+      border-bottom: 1px solid #E0E2EC;
+      background: #FBFBFE;
+    }
+    .info-tab {
+      padding: 14px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .info-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: white;
+    }
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .doc-section {
+      margin-bottom: 24px;
+    }
+    .doc-section h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .doc-section p {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: #333;
+    }
+    .code-container {
+      background: #1E1E2E;
+      color: #CDD6F4;
+      padding: 16px;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Flutter UI Components Emulation */
+    .fl-appbar {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+    .fl-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 10px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .fl-list-tile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+    }
+    .fl-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+    }
+    .fl-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    .fl-btn:active {
+      transform: scale(0.98);
+    }
+    .fl-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid #CCC;
+      font-size: 1rem;
+      margin-bottom: 14px;
+      outline: none;
+    }
+    .fl-input:focus {
+      border-color: #6750A4;
+      box-shadow: 0 0 0 2px rgba(103,80,164,0.2);
+    }
+    .fl-snackbar {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: #322F35;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: none;
+      animation: slideUp 0.3s ease;
+      z-index: 100;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @media (max-width: 900px) {
+      body { flex-direction: column; overflow-y: auto; height: auto; }
+      .sidebar { width: 100%; height: auto; }
+      .content-body { flex-direction: column; }
+      .preview-pane, .info-pane { flex: none; width: 100%; }
+      .device-mobile, .device-tablet, .device-desktop { width: 100%; height: 600px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1><span class="material-icons">flutter_dash</span> Flutter Lab</h1>
+      <p>Building Applications Using Flutter</p>
+    </div>
+    <div class="exp-list" id="expList"></div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div class="top-title">
+        <h2 id="currentTitle">Loading Experiment...</h2>
+      </div>
+      <div class="top-links">
+        <a id="directLink" href="#" class="btn btn-outline" target="_blank">
+          <span class="material-icons" style="font-size:18px;">open_in_new</span> Direct Link
+        </a>
+        <a href="https://github.com/Anmol-0705/FlutterLab" class="btn btn-primary" target="_blank">
+          <span class="material-icons" style="font-size:18px;">code</span> GitHub Repo
+        </a>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Preview Simulator Pane -->
+      <section class="preview-pane">
+        <div class="device-controls">
+          <button class="device-btn active" onclick="setDevice('mobile')">
+            <span class="material-icons" style="font-size:16px;">phone_iphone</span> Mobile
+          </button>
+          <button class="device-btn" onclick="setDevice('tablet')">
+            <span class="material-icons" style="font-size:16px;">tablet_mac</span> Tablet
+          </button>
+          <button class="device-btn" onclick="setDevice('desktop')">
+            <span class="material-icons" style="font-size:16px;">desktop_windows</span> Desktop
+          </button>
+        </div>
+
+        <div class="device-frame device-mobile" id="deviceFrame">
+          <div class="status-bar" id="statusBar">
+            <span>9:41</span>
+            <div style="display:flex; gap:6px;">
+              <span class="material-icons" style="font-size:14px;">signal_cellular_4_bar</span>
+              <span class="material-icons" style="font-size:14px;">wifi</span>
+              <span class="material-icons" style="font-size:14px;">battery_full</span>
+            </div>
+          </div>
+          <div class="screen-content" id="screenContent"></div>
+          <div class="fl-snackbar" id="snackBar"></div>
+        </div>
+      </section>
+
+      <!-- Info & Code Pane -->
+      <section class="info-pane">
+        <div class="info-tabs">
+          <div class="info-tab active" onclick="switchTab('tabCode')">Dart Code</div>
+          <div class="info-tab" onclick="switchTab('tabDocs')">Aim & Procedure</div>
+        </div>
+        <div class="tab-content active" id="tabCode">
+          <div id="codeFilesSelect" style="margin-bottom: 12px; display: none;"></div>
+          <div class="code-container" id="codeDisplay"></div>
+        </div>
+        <div class="tab-content" id="tabDocs">
+          <div class="doc-section">
+            <h3><span class="material-icons">track_changes</span> Aim</h3>
+            <p id="docAim"></p>
+          </div>
+          <div class="doc-section">
+            <h3><span class="material-icons">info</span> Description</h3>
+            <p id="docDescription"></p>
+          </div>
+          <div class="doc-section">
+            <h3><span class="material-icons">folder</span> Project Directory</h3>
+            <code id="docFolder" style="font-family:monospace; background:#EFEFEF; padding:4px 8px; border-radius:4px;"></code>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const expData = {"1": {"num": 1, "title": "Basic Widgets and Layouts", "aim": "To develop a Flutter application using basic widgets and layout widgets such as Container, Row, Column, Expanded, Card, and ListView.", "description": "This experiment demonstrates the development of a Flutter student profile/dashboard application using basic widgets and layout widgets. The main concepts include MaterialApp, Scaffold, StatelessWidget, AppBar, Column, Row, Container, Icon, Card, ListTile, and ListView.", "folder": "Experiment_01_Basic_Widgets", "code": {"lib/main.dart": "import 'package:flutter/material.dart';\n\nvoid main() {\n  runApp(const MyApp());\n}\n\nclass MyApp extends StatelessWidget {\n  const MyApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'Student Profile',\n      theme: ThemeData(\n        primarySwatch: Colors.indigo,\n        scaffoldBackgroundColor: Colors.grey[100],\n        appBarTheme: const AppBarTheme(\n          backgroundColor: Colors.indigo,\n          foregroundColor: Colors.white,\n        ),\n      ),\n      home: const StudentProfile(),\n    );\n  }\n}\n\nclass StudentProfile extends StatelessWidget {\n  const StudentProfile({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\n          'Student Profile',\n          style: TextStyle(fontWeight: FontWeight.bold),\n        ),\n        centerTitle: true,\n      ),\n      body: ListView(\n        padding: const EdgeInsets.all(16),\n        children: [\n          // Student Profile Container\n          Container(\n            padding: const EdgeInsets.all(20),\n            margin: const EdgeInsets.only(bottom: 15),\n            decoration: BoxDecoration(\n              color: Colors.indigo,\n              borderRadius: BorderRadius.circular(15),\n              boxShadow: const [\n                BoxShadow(\n                  color: Colors.grey,\n                  blurRadius: 6,\n                  offset: Offset(0, 3),\n                ),\n              ],\n            ),\n            child: const Column(\n              children: [\n                CircleAvatar(\n                  radius: 40,\n                  backgroundColor: Colors.white,\n                  child: Icon(\n                    Icons.person,\n                    size: 50,\n                    color: Colors.indigo,\n                  ),\n                ),\n                SizedBox(height: 12),\n                Text(\n                  'ARSATH AHAMED URK23CS1203',\n                  style: TextStyle(\n                    color: Colors.white,\n                    fontSize: 25,\n                    fontWeight: FontWeight.bold,\n                  ),\n                ),\n                SizedBox(height: 5),\n                Text(\n                  'Computer Science and Engineering',\n                  textAlign: TextAlign.center,\n                  style: TextStyle(\n                    color: Colors.white70,\n                    fontSize: 16,\n                  ),\n                ),\n                SizedBox(height: 5),\n                Text(\n                  'Flutter Laboratory',\n                  style: TextStyle(\n                    color: Colors.white70,\n                    fontSize: 15,\n                  ),\n                ),\n              ],\n            ),\n          ),\n\n          // Row with Icons\n          Card(\n            elevation: 4,\n            shape: RoundedRectangleBorder(\n              borderRadius: BorderRadius.circular(15),\n            ),\n            child: const Padding(\n              padding: EdgeInsets.all(18),\n              child: Row(\n                mainAxisAlignment: MainAxisAlignment.spaceEvenly,\n                children: [\n                  Icon(\n                    Icons.home,\n                    color: Colors.blue,\n                    size: 35,\n                  ),\n                  Icon(\n                    Icons.person,\n                    color: Colors.green,\n                    size: 35,\n                  ),\n                  Icon(\n                    Icons.settings,\n                    color: Colors.orange,\n                    size: 35,\n                  ),\n                ],\n              ),\n            ),\n          ),\n          const SizedBox(height: 15),\n\n          // Section Title\n          const Text(\n            'Subjects',\n            style: TextStyle(\n              fontSize: 22,\n              fontWeight: FontWeight.bold,\n              color: Colors.indigo,\n            ),\n          ),\n          const SizedBox(height: 10),\n\n          // Flutter Card\n          Card(\n            elevation: 4,\n            color: Colors.blue[50],\n            shape: RoundedRectangleBorder(\n              borderRadius: BorderRadius.circular(15),\n            ),\n            child: const ListTile(\n              leading: CircleAvatar(\n                backgroundColor: Colors.blue,\n                child: Icon(\n                  Icons.book,\n                  color: Colors.white,\n                ),\n              ),\n              title: Text(\n                'Flutter',\n                style: TextStyle(\n                  fontWeight: FontWeight.bold,\n                ),\n              ),\n              subtitle: Text(\n                'Mobile Application Development',\n              ),\n            ),\n          ),\n\n          // Cloud Computing Card\n          Card(\n            elevation: 4,\n            color: Colors.green[50],\n            shape: RoundedRectangleBorder(\n              borderRadius: BorderRadius.circular(15),\n            ),\n            child: const ListTile(\n              leading: CircleAvatar(\n                backgroundColor: Colors.green,\n                child: Icon(\n                  Icons.cloud,\n                  color: Colors.white,\n                ),\n              ),\n              title: Text(\n                'Cloud Computing',\n                style: TextStyle(\n                  fontWeight: FontWeight.bold,\n                ),\n              ),\n              subtitle: Text(\n                'Cloud Technologies and Services',\n              ),\n            ),\n          ),\n\n          // Programming Card\n          Card(\n            elevation: 4,\n            color: Colors.orange[50],\n            shape: RoundedRectangleBorder(\n              borderRadius: BorderRadius.circular(15),\n            ),\n            child: const ListTile(\n              leading: CircleAvatar(\n                backgroundColor: Colors.orange,\n                child: Icon(\n                  Icons.code,\n                  color: Colors.white,\n                ),\n              ),\n              title: Text(\n                'Programming',\n                style: TextStyle(\n                  fontWeight: FontWeight.bold,\n                ),\n              ),\n              subtitle: Text(\n                'Programming Fundamentals',\n              ),\n            ),\n          ),\n          const SizedBox(height: 15),\n\n          // Bottom Message\n          Container(\n            padding: const EdgeInsets.all(15),\n            decoration: BoxDecoration(\n              color: Colors.deepPurple,\n              borderRadius: BorderRadius.circular(12),\n            ),\n            child: const Text(\n              'Welcome to Flutter Laboratory!',\n              textAlign: TextAlign.center,\n              style: TextStyle(\n                color: Colors.white,\n                fontSize: 18,\n                fontWeight: FontWeight.bold,\n              ),\n            ),\n          ),\n        ],\n      ),\n    );\n  }\n}\n"}}, "2": {"num": 2, "title": "Adaptive and Responsive UI Design", "aim": "To create a Flutter application that automatically adapts its layout according to the available screen size.", "description": "This experiment demonstrates the development of a responsive Flutter application that automatically changes its user interface according to the screen width. The application uses LayoutBuilder to provide different layouts for mobile, tablet, and desktop-sized screens.", "folder": "Experiment_02_Responsive_UI", "code": {"lib/main.dart": "import 'package:flutter/material.dart';\n\nvoid main() {\n  runApp(const MyApp());\n}\n\nclass MyApp extends StatelessWidget {\n  const MyApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'Responsive UI',\n      theme: ThemeData(\n        useMaterial3: true,\n        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),\n      ),\n      home: const ResponsiveHomePage(),\n    );\n  }\n}\n\nclass ResponsiveHomePage extends StatelessWidget {\n  const ResponsiveHomePage({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text('Adaptive and Responsive UI'),\n        backgroundColor: Theme.of(context).colorScheme.inversePrimary,\n      ),\n      body: LayoutBuilder(\n        builder: (context, constraints) {\n          // Mobile layout\n          if (constraints.maxWidth < 600) {\n            return Column(\n              children: const [\n                Card(\n                  margin: EdgeInsets.all(10),\n                  child: ListTile(\n                    leading: Icon(Icons.person),\n                    title: Text('Student'),\n                    subtitle: Text('Mobile Layout'),\n                  ),\n                ),\n                Card(\n                  margin: EdgeInsets.all(10),\n                  child: ListTile(\n                    leading: Icon(Icons.book),\n                    title: Text('Courses'),\n                    subtitle: Text('Mobile Layout'),\n                  ),\n                ),\n              ],\n            );\n          }\n\n          // Desktop / Tablet layout\n          return Row(\n            children: const [\n              Expanded(\n                child: Card(\n                  margin: EdgeInsets.all(10),\n                  child: ListTile(\n                    leading: Icon(Icons.people),\n                    title: Text('Students'),\n                    subtitle: Text('Desktop / Tablet Layout'),\n                  ),\n                ),\n              ),\n              Expanded(\n                child: Card(\n                  margin: EdgeInsets.all(10),\n                  child: ListTile(\n                    leading: Icon(Icons.school),\n                    title: Text('Courses'),\n                    subtitle: Text('Desktop / Tablet Layout'),\n                  ),\n                ),\n              ),\n            ],\n          );\n        },\n      ),\n    );\n  }\n}\n"}}, "3": {"num": 3, "title": "Add Interactivity to App - Input and Forms", "aim": "To create an interactive Flutter student registration form with input fields and validation for Student Name, Email, and Password, along with a Submit button.", "description": "This experiment demonstrates how to add interactivity to a Flutter application using input fields and forms. A Form is used to group input fields, GlobalKey<FormState> validates inputs, and SnackBar provides user feedback.", "folder": "Experiment_03_Input_and_Forms", "code": {"lib/main.dart": "import 'package:flutter/material.dart';\n\nvoid main() {\n  runApp(const StudentFormApp());\n}\n\nclass StudentFormApp extends StatelessWidget {\n  const StudentFormApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'Student Registration',\n      theme: ThemeData(\n        useMaterial3: true,\n        colorSchemeSeed: Colors.blue,\n      ),\n      home: const StudentForm(),\n    );\n  }\n}\n\nclass StudentForm extends StatefulWidget {\n  const StudentForm({super.key});\n\n  @override\n  State<StudentForm> createState() => _StudentFormState();\n}\n\nclass _StudentFormState extends State<StudentForm> {\n  final _formKey = GlobalKey<FormState>();\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\n          'Student Registration',\n          style: TextStyle(fontWeight: FontWeight.bold),\n        ),\n        centerTitle: true,\n      ),\n      body: Center(\n        child: SingleChildScrollView(\n          padding: const EdgeInsets.all(24),\n          child: Card(\n            elevation: 6,\n            child: Padding(\n              padding: const EdgeInsets.all(24),\n              child: Form(\n                key: _formKey,\n                child: Column(\n                  mainAxisSize: MainAxisSize.min,\n                  children: [\n                    const Icon(Icons.school, size: 60),\n                    const SizedBox(height: 15),\n                    const Text(\n                      'Create Student Account',\n                      style: TextStyle(\n                        fontSize: 24,\n                        fontWeight: FontWeight.bold,\n                      ),\n                    ),\n                    const SizedBox(height: 25),\n                    TextFormField(\n                      decoration: const InputDecoration(\n                        labelText: 'Student Name',\n                        prefixIcon: Icon(Icons.person),\n                        border: OutlineInputBorder(),\n                      ),\n                      validator: (value) {\n                        if (value == null || value.isEmpty) {\n                          return 'Enter student name';\n                        }\n                        return null;\n                      },\n                    ),\n                    const SizedBox(height: 18),\n                    TextFormField(\n                      decoration: const InputDecoration(\n                        labelText: 'Email',\n                        prefixIcon: Icon(Icons.email),\n                        border: OutlineInputBorder(),\n                      ),\n                      keyboardType: TextInputType.emailAddress,\n                    ),\n                    const SizedBox(height: 18),\n                    TextFormField(\n                      obscureText: true,\n                      decoration: const InputDecoration(\n                        labelText: 'Password',\n                        prefixIcon: Icon(Icons.lock),\n                        border: OutlineInputBorder(),\n                      ),\n                    ),\n                    const SizedBox(height: 25),\n                    SizedBox(\n                      width: double.infinity,\n                      child: ElevatedButton(\n                        onPressed: () {\n                          if (_formKey.currentState!.validate()) {\n                            ScaffoldMessenger.of(context).showSnackBar(\n                              const SnackBar(\n                                content: Text('Form submitted successfully'),\n                              ),\n                            );\n                          }\n                        },\n                        child: const Text('Submit'),\n                      ),\n                    ),\n                  ],\n                ),\n              ),\n            ),\n          ),\n        ),\n      ),\n    );\n  }\n}\n"}}, "4": {"num": 4, "title": "Utilize Assets and Media", "aim": "To add and display image, audio and video assets in a Flutter application.", "description": "This experiment demonstrates how to add and display image, audio, and video assets in a Flutter application. Assets are stored in the assets folder, declared in pubspec.yaml, and rendered via Flutter widgets with interactive video controls.", "folder": "Experiment_04_Assets_and_Media", "code": {"lib/main.dart": "import 'package:flutter/material.dart';\nimport 'package:video_player/video_player.dart';\n\nvoid main() {\n  runApp(const MediaApp());\n}\n\nclass MediaApp extends StatelessWidget {\n  const MediaApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return const MaterialApp(\n      debugShowCheckedModeBanner: false,\n      home: MediaDemo(),\n    );\n  }\n}\n\nclass MediaDemo extends StatefulWidget {\n  const MediaDemo({super.key});\n\n  @override\n  State<MediaDemo> createState() => _MediaDemoState();\n}\n\nclass _MediaDemoState extends State<MediaDemo> {\n  late VideoPlayerController _controller;\n  bool isVideoReady = false;\n\n  @override\n  void initState() {\n    super.initState();\n    _controller = VideoPlayerController.asset('assets/video/sample.mp4');\n    _controller.initialize().then((_) {\n      setState(() {\n        isVideoReady = true;\n      });\n    }).catchError((_) {\n      // Graceful fallback for web/missing asset\n      setState(() {});\n    });\n  }\n\n  @override\n  void dispose() {\n    _controller.dispose();\n    super.dispose();\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(title: const Text('Flutter Assets and Media')),\n      body: SingleChildScrollView(\n        child: Center(\n          child: Padding(\n            padding: const EdgeInsets.all(20),\n            child: Column(\n              children: [\n                const Text(\n                  'Hello World',\n                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),\n                ),\n                const SizedBox(height: 30),\n                const Text(\n                  'Image Asset',\n                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),\n                ),\n                const SizedBox(height: 10),\n                Image.asset(\n                  'assets/images/flutter.png',\n                  width: 250,\n                  height: 250,\n                  fit: BoxFit.contain,\n                  errorBuilder: (context, error, stackTrace) {\n                    return Container(\n                      width: 250,\n                      height: 200,\n                      decoration: BoxDecoration(\n                        color: Colors.blue.shade50,\n                        borderRadius: BorderRadius.circular(16),\n                        border: Border.all(color: Colors.blue.shade200),\n                      ),\n                      child: Column(\n                        mainAxisAlignment: MainAxisAlignment.center,\n                        children: const [\n                          Icon(Icons.image, size: 80, color: Colors.blue),\n                          SizedBox(height: 10),\n                          Text('Flutter Asset Logo', style: TextStyle(fontWeight: FontWeight.bold)),\n                        ],\n                      ),\n                    );\n                  },\n                ),\n                const SizedBox(height: 40),\n                const Text(\n                  'Video Asset',\n                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),\n                ),\n                const SizedBox(height: 10),\n                isVideoReady\n                    ? SizedBox(\n                        width: 600,\n                        child: AspectRatio(\n                          aspectRatio: _controller.value.aspectRatio,\n                          child: VideoPlayer(_controller),\n                        ),\n                      )\n                    : Container(\n                        width: 400,\n                        height: 220,\n                        decoration: BoxDecoration(\n                          color: Colors.black87,\n                          borderRadius: BorderRadius.circular(12),\n                        ),\n                        child: const Center(\n                          child: Column(\n                            mainAxisAlignment: MainAxisAlignment.center,\n                            children: [\n                              Icon(Icons.videocam, size: 64, color: Colors.white70),\n                              SizedBox(height: 10),\n                              Text('Sample Video Asset Player', style: TextStyle(color: Colors.white70)),\n                            ],\n                          ),\n                        ),\n                      ),\n                const SizedBox(height: 20),\n                ElevatedButton(\n                  onPressed: () {\n                    setState(() {\n                      if (_controller.value.isPlaying) {\n                        _controller.pause();\n                      } else {\n                        _controller.play();\n                      }\n                    });\n                  },\n                  child: Text(\n                    _controller.value.isPlaying ? 'Pause Video' : 'Play Video',\n                  ),\n                ),\n              ],\n            ),\n          ),\n        ),\n      ),\n    );\n  }\n}\n"}}, "5": {"num": 5, "title": "Implementation of Navigation and Routing", "aim": "To implement navigation between multiple Flutter screens using Navigator and named routes.", "description": "This experiment demonstrates how to navigate between multiple screens in a Flutter application. The application contains Home, Profile, and Details screens. Named routes are used for forward navigation and Navigator.pop for backward navigation.", "folder": "Experiment_05_Navigation_and_Routing", "code": {"lib/main.dart": "import 'package:flutter/material.dart';\nimport 'home.dart';\nimport 'profile.dart';\nimport 'details.dart';\n\nvoid main() {\n  runApp(const NavigationApp());\n}\n\nclass NavigationApp extends StatelessWidget {\n  const NavigationApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'Navigation App',\n      theme: ThemeData(\n        colorScheme: ColorScheme.fromSeed(\n          seedColor: Colors.purple,\n        ),\n        useMaterial3: true,\n      ),\n      initialRoute: '/',\n      routes: {\n        '/': (context) => const HomePage(),\n        '/profile': (context) => const ProfilePage(),\n        '/details': (context) => const DetailsPage(),\n      },\n    );\n  }\n}\n", "lib/home.dart": "import 'package:flutter/material.dart';\n\nclass HomePage extends StatelessWidget {\n  const HomePage({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\n          'Home',\n          style: TextStyle(\n            color: Colors.white,\n            fontWeight: FontWeight.bold,\n          ),\n        ),\n        centerTitle: true,\n        backgroundColor: Colors.purple,\n      ),\n      body: Container(\n        decoration: const BoxDecoration(\n          gradient: LinearGradient(\n            colors: [\n              Colors.purple,\n              Colors.pink,\n              Colors.lightBlue,\n            ],\n            begin: Alignment.topLeft,\n            end: Alignment.bottomRight,\n          ),\n        ),\n        child: Center(\n          child: Card(\n            elevation: 10,\n            margin: const EdgeInsets.all(30),\n            shape: RoundedRectangleBorder(\n              borderRadius: BorderRadius.circular(25),\n            ),\n            child: Padding(\n              padding: const EdgeInsets.all(35),\n              child: Column(\n                mainAxisSize: MainAxisSize.min,\n                children: [\n                  const Icon(\n                    Icons.home_rounded,\n                    size: 80,\n                    color: Colors.purple,\n                  ),\n                  const SizedBox(height: 20),\n                  const Text(\n                    'Welcome Home!',\n                    style: TextStyle(\n                      fontSize: 28,\n                      fontWeight: FontWeight.bold,\n                      color: Colors.purple,\n                    ),\n                  ),\n                  const SizedBox(height: 10),\n                  const Text(\n                    'Explore the different screens',\n                    style: TextStyle(\n                      fontSize: 16,\n                      color: Colors.grey,\n                    ),\n                  ),\n                  const SizedBox(height: 30),\n                  ElevatedButton.icon(\n                    onPressed: () {\n                      Navigator.pushNamed(context, '/profile');\n                    },\n                    icon: const Icon(Icons.person),\n                    label: const Text('Go to Profile'),\n                    style: ElevatedButton.styleFrom(\n                      backgroundColor: Colors.pink,\n                      foregroundColor: Colors.white,\n                      padding: const EdgeInsets.symmetric(\n                        horizontal: 25,\n                        vertical: 15,\n                      ),\n                      shape: RoundedRectangleBorder(\n                        borderRadius: BorderRadius.circular(30),\n                      ),\n                    ),\n                  ),\n                ],\n              ),\n            ),\n          ),\n        ),\n      ),\n    );\n  }\n}\n", "lib/profile.dart": "import 'package:flutter/material.dart';\n\nclass ProfilePage extends StatelessWidget {\n  const ProfilePage({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\n          'Profile',\n          style: TextStyle(\n            color: Colors.white,\n            fontWeight: FontWeight.bold,\n          ),\n        ),\n        centerTitle: true,\n        backgroundColor: Colors.pink,\n      ),\n      body: Container(\n        decoration: const BoxDecoration(\n          gradient: LinearGradient(\n            colors: [\n              Colors.pink,\n              Colors.purple,\n              Colors.lightBlue,\n            ],\n            begin: Alignment.topRight,\n            end: Alignment.bottomLeft,\n          ),\n        ),\n        child: Center(\n          child: Card(\n            elevation: 10,\n            margin: const EdgeInsets.all(30),\n            shape: RoundedRectangleBorder(\n              borderRadius: BorderRadius.circular(25),\n            ),\n            child: Padding(\n              padding: const EdgeInsets.all(35),\n              child: Column(\n                mainAxisSize: MainAxisSize.min,\n                children: [\n                  const CircleAvatar(\n                    radius: 50,\n                    backgroundColor: Colors.pink,\n                    child: Icon(\n                      Icons.person,\n                      size: 60,\n                      color: Colors.white,\n                    ),\n                  ),\n                  const SizedBox(height: 20),\n                  const Text(\n                    'Student Profile',\n                    style: TextStyle(\n                      fontSize: 27,\n                      fontWeight: FontWeight.bold,\n                      color: Colors.purple,\n                    ),\n                  ),\n                  const SizedBox(height: 10),\n                  const Text(\n                    'Welcome to your profile page!',\n                    style: TextStyle(\n                      fontSize: 16,\n                      color: Colors.grey,\n                    ),\n                  ),\n                  const SizedBox(height: 30),\n                  ElevatedButton.icon(\n                    onPressed: () {\n                      Navigator.pushNamed(context, '/details');\n                    },\n                    icon: const Icon(Icons.info_outline),\n                    label: const Text('View Details'),\n                    style: ElevatedButton.styleFrom(\n                      backgroundColor: Colors.lightBlue,\n                      foregroundColor: Colors.white,\n                      padding: const EdgeInsets.symmetric(\n                        horizontal: 25,\n                        vertical: 15,\n                      ),\n                      shape: RoundedRectangleBorder(\n                        borderRadius: BorderRadius.circular(30),\n                      ),\n                    ),\n                  ),\n                ],\n              ),\n            ),\n          ),\n        ),\n      ),\n    );\n  }\n}\n", "lib/details.dart": "import 'package:flutter/material.dart';\n\nclass DetailsPage extends StatelessWidget {\n  const DetailsPage({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\n          'Details',\n          style: TextStyle(\n            color: Colors.white,\n            fontWeight: FontWeight.bold,\n          ),\n        ),\n        centerTitle: true,\n        backgroundColor: Colors.lightBlue,\n      ),\n      body: Container(\n        decoration: const BoxDecoration(\n          gradient: LinearGradient(\n            colors: [\n              Colors.lightBlue,\n              Colors.purple,\n              Colors.pink,\n            ],\n            begin: Alignment.topLeft,\n            end: Alignment.bottomRight,\n          ),\n        ),\n        child: Center(\n          child: Card(\n            elevation: 10,\n            margin: const EdgeInsets.all(30),\n            shape: RoundedRectangleBorder(\n              borderRadius: BorderRadius.circular(25),\n            ),\n            child: Padding(\n              padding: const EdgeInsets.all(35),\n              child: Column(\n                mainAxisSize: MainAxisSize.min,\n                children: [\n                  const Icon(\n                    Icons.school_rounded,\n                    size: 80,\n                    color: Colors.lightBlue,\n                  ),\n                  const SizedBox(height: 20),\n                  const Text(\n                    'Student Details',\n                    style: TextStyle(\n                      fontSize: 27,\n                      fontWeight: FontWeight.bold,\n                      color: Colors.purple,\n                    ),\n                  ),\n                  const SizedBox(height: 20),\n                  const Text(\n                    'Name: Arsath Ahamed URK23CS1203\\n'\n                    'Course: Computer Science\\n'\n                    'Department: CSE',\n                    textAlign: TextAlign.center,\n                    style: TextStyle(\n                      fontSize: 17,\n                      height: 1.7,\n                      color: Colors.black87,\n                    ),\n                  ),\n                  const SizedBox(height: 30),\n                  ElevatedButton.icon(\n                    onPressed: () {\n                      Navigator.pop(context);\n                    },\n                    icon: const Icon(Icons.arrow_back),\n                    label: const Text('Back to Profile'),\n                    style: ElevatedButton.styleFrom(\n                      backgroundColor: Colors.purple,\n                      foregroundColor: Colors.white,\n                      padding: const EdgeInsets.symmetric(\n                        horizontal: 25,\n                        vertical: 15,\n                      ),\n                      shape: RoundedRectangleBorder(\n                        borderRadius: BorderRadius.circular(30),\n                      ),\n                    ),\n                  ),\n                ],\n              ),\n            ),\n          ),\n        ),\n      ),\n    );\n  }\n}\n"}}, "6": {"num": 6, "title": "Integrate Animations and Transitions", "aim": "To Implement animations and smooth transitions in a Flutter application using AnimatedContainer.", "description": "This experiment demonstrates the use of Flutter's AnimatedContainer to create a smooth size transition. A button is provided to change the size of the widget dynamically using setState().", "folder": "Experiment_06_Animations_and_Transitions", "code": {"lib/main.dart": "import 'package:flutter/material.dart';\n\nvoid main() {\n  runApp(const AnimationApp());\n}\n\nclass AnimationApp extends StatelessWidget {\n  const AnimationApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'Flutter Animation',\n      theme: ThemeData(\n        colorScheme: ColorScheme.fromSeed(\n          seedColor: Colors.deepPurple,\n        ),\n        useMaterial3: true,\n      ),\n      home: const AnimationPage(),\n    );\n  }\n}\n\nclass AnimationPage extends StatefulWidget {\n  const AnimationPage({super.key});\n\n  @override\n  State<AnimationPage> createState() => _AnimationPageState();\n}\n\nclass _AnimationPageState extends State<AnimationPage> {\n  bool isLarge = false;\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\n          'Flutter Animations',\n          style: TextStyle(\n            color: Colors.white,\n            fontWeight: FontWeight.bold,\n          ),\n        ),\n        centerTitle: true,\n        backgroundColor: Colors.deepPurple,\n      ),\n      body: Container(\n        width: double.infinity,\n        height: double.infinity,\n        color: const Color(0xFFEDE7F6),\n        child: Center(\n          child: Column(\n            mainAxisAlignment: MainAxisAlignment.center,\n            children: [\n              AnimatedContainer(\n                duration: const Duration(seconds: 1),\n                curve: Curves.easeInOut,\n                width: isLarge ? 300 : 150,\n                height: isLarge ? 300 : 150,\n                decoration: BoxDecoration(\n                  color: const Color(0xFFB39DDB),\n                  borderRadius: BorderRadius.circular(\n                    isLarge ? 50 : 20,\n                  ),\n                  boxShadow: const [\n                    BoxShadow(\n                      blurRadius: 15,\n                      spreadRadius: 3,\n                      offset: Offset(0, 8),\n                    ),\n                  ],\n                ),\n                child: const Center(\n                  child: Text(\n                    'Flutter',\n                    style: TextStyle(\n                      fontSize: 28,\n                      color: Colors.white,\n                      fontWeight: FontWeight.bold,\n                    ),\n                  ),\n                ),\n              ),\n              const SizedBox(height: 40),\n              ElevatedButton.icon(\n                onPressed: () {\n                  setState(() {\n                    isLarge = !isLarge;\n                  });\n                },\n                icon: const Icon(Icons.animation),\n                label: const Text(\n                  'Animate',\n                  style: TextStyle(\n                    fontSize: 18,\n                    fontWeight: FontWeight.bold,\n                  ),\n                ),\n                style: ElevatedButton.styleFrom(\n                  backgroundColor: Colors.deepPurple,\n                  foregroundColor: Colors.white,\n                  padding: const EdgeInsets.symmetric(\n                    horizontal: 35,\n                    vertical: 16,\n                  ),\n                  shape: RoundedRectangleBorder(\n                    borderRadius: BorderRadius.circular(30),\n                  ),\n                ),\n              ),\n              const SizedBox(height: 20),\n              Text(\n                isLarge ? 'Widget is Large' : 'Widget is Small',\n                style: const TextStyle(\n                  color: Colors.deepPurple,\n                  fontSize: 18,\n                  fontWeight: FontWeight.w500,\n                ),\n              ),\n            ],\n          ),\n        ),\n      ),\n    );\n  }\n}\n"}}, "7": {"num": 7, "title": "Application State Management and Serialization", "aim": "To manage application state and serialize/deserialize data using JSON in a Flutter application.", "description": "This experiment demonstrates application state management using setState() and JSON serialization/deserialization using a Student model. Student data is converted from a Dart object into JSON format using toJson() and converted back into a Dart object using fromJson(). A list of students is displayed dynamically using ListView.builder().", "folder": "Experiment_07_State_Management_and_Serialization", "code": {"lib/student.dart": "class Student {\n  final int id;\n  final String name;\n  final String course;\n\n  Student({\n    required this.id,\n    required this.name,\n    required this.course,\n  });\n\n  Map<String, dynamic> toJson() {\n    return {\n      'id': id,\n      'name': name,\n      'course': course,\n    };\n  }\n\n  factory Student.fromJson(Map<String, dynamic> json) {\n    return Student(\n      id: json['id'],\n      name: json['name'],\n      course: json['course'],\n    );\n  }\n}\n", "lib/main.dart": "import 'package:flutter/material.dart';\nimport 'student.dart';\n\nvoid main() {\n  runApp(const StateApp());\n}\n\nclass StateApp extends StatelessWidget {\n  const StateApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return const MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'State Management',\n      home: StudentPage(),\n    );\n  }\n}\n\nclass StudentPage extends StatefulWidget {\n  const StudentPage({super.key});\n\n  @override\n  State<StudentPage> createState() => _StudentPageState();\n}\n\nclass _StudentPageState extends State<StudentPage> {\n  List<String> students = [];\n  Student student = Student(\n    id: 1,\n    name: 'Raj',\n    course: 'CSE',\n  );\n\n  @override\n  void initState() {\n    super.initState();\n    Map<String, dynamic> data = student.toJson();\n    debugPrint('$data');\n    Student newStudent = Student.fromJson(data);\n    debugPrint(newStudent.name);\n  }\n\n  void addStudent() {\n    setState(() {\n      students.add('Raj (${students.length + 1})');\n    });\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text('Student State Management & Serialization'),\n      ),\n      body: Column(\n        children: [\n          const SizedBox(height: 20),\n          ElevatedButton(\n            onPressed: addStudent,\n            child: const Text('Add Student'),\n          ),\n          const SizedBox(height: 10),\n          Expanded(\n            child: ListView.builder(\n              itemCount: students.length,\n              itemBuilder: (context, index) {\n                return ListTile(\n                  leading: CircleAvatar(\n                    child: Text('${index + 1}'),\n                  ),\n                  title: Text(students[index]),\n                  subtitle: const Text('Course: CSE'),\n                );\n              },\n            ),\n          ),\n        ],\n      ),\n    );\n  }\n}\n"}}, "8": {"num": 8, "title": "Data Persistence using SQLite and Firebase", "aim": "To Implement data persistence in a Flutter application using SQLite for local storage and Firebase Cloud Firestore for cloud storage, to perform basic data operations such as insertion, retrieval, updating, and deletion.", "description": "This experiment demonstrates how Flutter applications can store data permanently using SQLite for local device storage and Firebase Cloud Firestore for cloud persistence.", "folder": "Experiment_08_Data_Persistence_SQLite_Firebase", "code": {"lib/database_helper.dart": "import 'package:flutter/foundation.dart';\nimport 'package:path/path.dart';\nimport 'package:sqflite_common_ffi/sqflite_ffi.dart';\nimport 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';\n\nclass DatabaseHelper {\n  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();\n  static Database? _database;\n\n  DatabaseHelper._privateConstructor();\n\n  Future<Database> get database async {\n    if (_database != null) {\n      return _database!;\n    }\n    _database = await _initDatabase();\n    return _database!;\n  }\n\n  Future<Database> _initDatabase() async {\n    if (kIsWeb) {\n      databaseFactory = databaseFactoryFfiWeb;\n      return await openDatabase(\n        'students_web.db',\n        version: 1,\n        onCreate: (db, version) async {\n          await db.execute('''\n            CREATE TABLE students(\n              id INTEGER PRIMARY KEY AUTOINCREMENT,\n              name TEXT NOT NULL,\n              course TEXT NOT NULL\n            )\n          ''');\n        },\n      );\n    }\n    final path = join(await getDatabasesPath(), 'students.db');\n    return await openDatabase(\n      path,\n      version: 1,\n      onCreate: (db, version) async {\n        await db.execute('''\n          CREATE TABLE students(\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            name TEXT NOT NULL,\n            course TEXT NOT NULL\n          )\n        ''');\n      },\n    );\n  }\n\n  Future<int> insertStudent(String name, String course) async {\n    final db = await database;\n    return await db.insert(\n      'students',\n      {\n        'name': name,\n        'course': course,\n      },\n    );\n  }\n\n  Future<List<Map<String, dynamic>>> getStudents() async {\n    final db = await database;\n    return await db.query(\n      'students',\n      orderBy: 'id DESC',\n    );\n  }\n\n  Future<int> updateStudent(int id, String name, String course) async {\n    final db = await database;\n    return await db.update(\n      'students',\n      {\n        'name': name,\n        'course': course,\n      },\n      where: 'id = ?',\n      whereArgs: [id],\n    );\n  }\n\n  Future<int> deleteStudent(int id) async {\n    final db = await database;\n    return await db.delete(\n      'students',\n      where: 'id = ?',\n      whereArgs: [id],\n    );\n  }\n}\n\nvoid initializeSQLite() {\n  if (kIsWeb) {\n    databaseFactory = databaseFactoryFfiWeb;\n  } else {\n    sqfliteFfiInit();\n    databaseFactory = databaseFactoryFfi;\n  }\n}\n", "lib/firebase_options.dart": "import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;\nimport 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb, TargetPlatform;\n\nclass DefaultFirebaseOptions {\n  static FirebaseOptions get currentPlatform {\n    if (kIsWeb) {\n      return web;\n    }\n    switch (defaultTargetPlatform) {\n      case TargetPlatform.android:\n        return android;\n      case TargetPlatform.iOS:\n        return ios;\n      case TargetPlatform.macOS:\n        return macos;\n      case TargetPlatform.windows:\n        return windows;\n      case TargetPlatform.linux:\n        throw UnsupportedError('DefaultFirebaseOptions have not been configured for linux.');\n      default:\n        throw UnsupportedError('DefaultFirebaseOptions are not supported for this platform.');\n    }\n  }\n\n  static const FirebaseOptions web = FirebaseOptions(\n    apiKey: 'AIzaSyD2_SqRHdwOFdhzLDy5cbXKFpjdPgGuhHg',\n    appId: '1:291139208558:web:3ce393b0c2f589fbafed7f',\n    messagingSenderId: '291139208558',\n    projectId: 'student-firebase-app-b68fd',\n    authDomain: 'student-firebase-app-b68fd.firebaseapp.com',\n    storageBucket: 'student-firebase-app-b68fd.firebasestorage.app',\n    measurementId: 'G-HP1425X0DQ',\n  );\n\n  static const FirebaseOptions android = FirebaseOptions(\n    apiKey: 'AIzaSyAMHi3_F9LRqqkHCU2wPsrFKMDcrwfAeLA',\n    appId: '1:291139208558:android:4103cdb00632d5baafed7f',\n    messagingSenderId: '291139208558',\n    projectId: 'student-firebase-app-b68fd',\n    storageBucket: 'student-firebase-app-b68fd.firebasestorage.app',\n  );\n\n  static const FirebaseOptions ios = FirebaseOptions(\n    apiKey: 'AIzaSyCDi8mRM1HjcyfX_8RfeQ4GHMdkhG99V2s',\n    appId: '1:291139208558:ios:6bd582928a142796afed7f',\n    messagingSenderId: '291139208558',\n    projectId: 'student-firebase-app-b68fd',\n    storageBucket: 'student-firebase-app-b68fd.firebasestorage.app',\n    iosBundleId: 'com.example.sqliteApp',\n  );\n\n  static const FirebaseOptions macos = FirebaseOptions(\n    apiKey: 'AIzaSyCDi8mRM1HjcyfX_8RfeQ4GHMdkhG99V2s',\n    appId: '1:291139208558:ios:6bd582928a142796afed7f',\n    messagingSenderId: '291139208558',\n    projectId: 'student-firebase-app-b68fd',\n    storageBucket: 'student-firebase-app-b68fd.firebasestorage.app',\n    iosBundleId: 'com.example.sqliteApp',\n  );\n\n  static const FirebaseOptions windows = FirebaseOptions(\n    apiKey: 'AIzaSyD2_SqRHdwOFdhzLDy5cbXKFpjdPgGuhHg',\n    appId: '1:291139208558:web:707da545013202cbafed7f',\n    messagingSenderId: '291139208558',\n    projectId: 'student-firebase-app-b68fd',\n    authDomain: 'student-firebase-app-b68fd.firebaseapp.com',\n    storageBucket: 'student-firebase-app-b68fd.firebasestorage.app',\n    measurementId: 'G-5TNZX9RJ3M',\n  );\n}\n", "lib/main.dart": "import 'package:cloud_firestore/cloud_firestore.dart';\nimport 'package:firebase_core/firebase_core.dart';\nimport 'package:flutter/foundation.dart';\nimport 'package:flutter/material.dart';\nimport 'database_helper.dart';\nimport 'firebase_options.dart';\n\nFuture<void> main() async {\n  WidgetsFlutterBinding.ensureInitialized();\n  initializeSQLite();\n  try {\n    await Firebase.initializeApp(\n      options: DefaultFirebaseOptions.currentPlatform,\n    );\n  } catch (e) {\n    debugPrint('Firebase init notice: $e');\n  }\n  runApp(const StudentDataApp());\n}\n\nclass StudentDataApp extends StatelessWidget {\n  const StudentDataApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'Student Data Persistence',\n      theme: ThemeData(\n        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),\n        useMaterial3: true,\n      ),\n      home: const StudentHomePage(),\n    );\n  }\n}\n\nclass StudentHomePage extends StatefulWidget {\n  const StudentHomePage({super.key});\n\n  @override\n  State<StudentHomePage> createState() => _StudentHomePageState();\n}\n\nclass _StudentHomePageState extends State<StudentHomePage> {\n  final nameController = TextEditingController();\n  final courseController = TextEditingController();\n  List<Map<String, dynamic>> sqliteStudents = [];\n  List<Map<String, dynamic>> firebaseStudents = [];\n  bool loadingSQLite = false;\n  bool loadingFirebase = false;\n\n  @override\n  void initState() {\n    super.initState();\n    loadSQLiteStudents();\n    loadFirebaseStudents();\n  }\n\n  // SQLite\n  Future<void> loadSQLiteStudents() async {\n    setState(() => loadingSQLite = true);\n    try {\n      final data = await DatabaseHelper.instance.getStudents();\n      if (!mounted) return;\n      setState(() {\n        sqliteStudents = data;\n        loadingSQLite = false;\n      });\n    } catch (e) {\n      if (!mounted) return;\n      setState(() => loadingSQLite = false);\n    }\n  }\n\n  Future<void> addSQLiteStudent(String name, String course) async {\n    await DatabaseHelper.instance.insertStudent(name, course);\n    await loadSQLiteStudents();\n  }\n\n  Future<void> updateSQLiteStudent(int id, String name, String course) async {\n    await DatabaseHelper.instance.updateStudent(id, name, course);\n    await loadSQLiteStudents();\n  }\n\n  Future<void> deleteSQLiteStudent(int id) async {\n    await DatabaseHelper.instance.deleteStudent(id);\n    await loadSQLiteStudents();\n  }\n\n  // Firebase\n  Future<void> loadFirebaseStudents() async {\n    setState(() => loadingFirebase = true);\n    try {\n      final snapshot = await FirebaseFirestore.instance\n          .collection('students')\n          .orderBy('name')\n          .get();\n      final data = snapshot.docs.map((doc) {\n        final student = doc.data();\n        return {\n          'id': doc.id,\n          'name': student['name'] ?? '',\n          'course': student['course'] ?? '',\n        };\n      }).toList();\n      if (!mounted) return;\n      setState(() {\n        firebaseStudents = data;\n        loadingFirebase = false;\n      });\n    } catch (e) {\n      if (!mounted) return;\n      setState(() => loadingFirebase = false);\n    }\n  }\n\n  Future<void> addFirebaseStudent(String name, String course) async {\n    try {\n      await FirebaseFirestore.instance.collection('students').add({\n        'name': name,\n        'course': course,\n        'createdAt': FieldValue.serverTimestamp(),\n      });\n      await loadFirebaseStudents();\n    } catch (e) {\n      showMessage('Firebase note: $e');\n    }\n  }\n\n  Future<void> updateFirebaseStudent(String id, String name, String course) async {\n    await FirebaseFirestore.instance.collection('students').doc(id).update({\n      'name': name,\n      'course': course,\n      'updatedAt': FieldValue.serverTimestamp(),\n    });\n    await loadFirebaseStudents();\n  }\n\n  Future<void> deleteFirebaseStudent(String id) async {\n    await FirebaseFirestore.instance.collection('students').doc(id).delete();\n    await loadFirebaseStudents();\n  }\n\n  Future<void> addStudent() async {\n    final name = nameController.text.trim();\n    final course = courseController.text.trim();\n    if (name.isEmpty || course.isEmpty) {\n      showMessage('Please enter student name and course');\n      return;\n    }\n    try {\n      await addSQLiteStudent(name, course);\n      await addFirebaseStudent(name, course);\n      nameController.clear();\n      courseController.clear();\n      showMessage('Student saved to SQLite and Firebase');\n    } catch (e) {\n      showMessage('Error: $e');\n    }\n  }\n\n  void showMessage(String message) {\n    if (!mounted) return;\n    ScaffoldMessenger.of(context).showSnackBar(\n      SnackBar(content: Text(message)),\n    );\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text('Student Data Persistence'),\n        centerTitle: true,\n      ),\n      body: SingleChildScrollView(\n        padding: const EdgeInsets.all(16),\n        child: Column(\n          crossAxisAlignment: CrossAxisAlignment.stretch,\n          children: [\n            const Text(\n              'SQLite + Firebase',\n              textAlign: TextAlign.center,\n              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),\n            ),\n            const SizedBox(height: 6),\n            Text(\n              kIsWeb ? 'Web: SQLite WASM + Firebase' : 'Desktop: SQLite + Firebase',\n              textAlign: TextAlign.center,\n              style: TextStyle(color: Colors.grey.shade700),\n            ),\n            const SizedBox(height: 25),\n            Card(\n              child: Padding(\n                padding: const EdgeInsets.all(16),\n                child: Column(\n                  children: [\n                    const Text(\n                      'Add Student',\n                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),\n                    ),\n                    const SizedBox(height: 15),\n                    TextField(\n                      controller: nameController,\n                      decoration: const InputDecoration(\n                        labelText: 'Student Name',\n                        prefixIcon: Icon(Icons.person),\n                        border: OutlineInputBorder(),\n                      ),\n                    ),\n                    const SizedBox(height: 12),\n                    TextField(\n                      controller: courseController,\n                      decoration: const InputDecoration(\n                        labelText: 'Course',\n                        prefixIcon: Icon(Icons.school),\n                        border: OutlineInputBorder(),\n                      ),\n                    ),\n                    const SizedBox(height: 15),\n                    SizedBox(\n                      width: double.infinity,\n                      child: ElevatedButton.icon(\n                        onPressed: addStudent,\n                        icon: const Icon(Icons.add),\n                        label: const Text('Save to SQLite + Firebase'),\n                      ),\n                    ),\n                  ],\n                ),\n              ),\n            ),\n            const SizedBox(height: 25),\n            const Text(\n              'SQLite - Local Storage',\n              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),\n            ),\n            const SizedBox(height: 10),\n            if (loadingSQLite)\n              const Center(child: CircularProgressIndicator())\n            else if (sqliteStudents.isEmpty)\n              const Card(\n                child: Padding(\n                  padding: EdgeInsets.all(16),\n                  child: Text('No SQLite students found.'),\n                ),\n              )\n            else\n              ...sqliteStudents.map(\n                (student) => Card(\n                  child: ListTile(\n                    leading: CircleAvatar(child: Text('${student['id']}')),\n                    title: Text(student['name']),\n                    subtitle: Text(student['course']),\n                    trailing: IconButton(\n                      icon: const Icon(Icons.delete),\n                      onPressed: () => deleteSQLiteStudent(student['id']),\n                    ),\n                  ),\n                ),\n              ),\n            const SizedBox(height: 15),\n            OutlinedButton.icon(\n              onPressed: loadSQLiteStudents,\n              icon: const Icon(Icons.refresh),\n              label: const Text('Refresh SQLite'),\n            ),\n            const SizedBox(height: 25),\n            const Divider(),\n            const SizedBox(height: 25),\n            const Text(\n              'Firebase - Cloud Storage',\n              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),\n            ),\n            const SizedBox(height: 10),\n            if (loadingFirebase)\n              const Center(child: CircularProgressIndicator())\n            else if (firebaseStudents.isEmpty)\n              const Card(\n                child: Padding(\n                  padding: EdgeInsets.all(16),\n                  child: Text('No Firebase students found.'),\n                ),\n              )\n            else\n              ...firebaseStudents.map(\n                (student) => Card(\n                  child: ListTile(\n                    leading: const CircleAvatar(child: Icon(Icons.cloud)),\n                    title: Text(student['name']),\n                    subtitle: Text(student['course']),\n                    trailing: IconButton(\n                      icon: const Icon(Icons.delete),\n                      onPressed: () => deleteFirebaseStudent(student['id']),\n                    ),\n                  ),\n                ),\n              ),\n            const SizedBox(height: 15),\n            OutlinedButton.icon(\n              onPressed: loadFirebaseStudents,\n              icon: const Icon(Icons.refresh),\n              label: const Text('Refresh Firebase'),\n            ),\n          ],\n        ),\n      ),\n    );\n  }\n\n  @override\n  void dispose() {\n    nameController.dispose();\n    courseController.dispose();\n    super.dispose();\n  }\n}\n"}}, "9": {"num": 9, "title": "Access REST API using HTTP", "aim": "To access a REST API using HTTP and retrieve and display JSON data in a Flutter application.", "description": "This experiment demonstrates how Flutter communicates with a REST API using the http package. The application sends a GET request to the JSONPlaceholder API, converts the JSON response into Dart data, and displays the posts using ListView.builder.", "folder": "Experiment_09_REST_API", "code": {"lib/main.dart": "import 'dart:convert';\nimport 'package:flutter/material.dart';\nimport 'package:http/http.dart' as http;\n\nvoid main() {\n  runApp(const ApiApp());\n}\n\nclass ApiApp extends StatelessWidget {\n  const ApiApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'API App',\n      theme: ThemeData(\n        scaffoldBackgroundColor: const Color(0xFFF8F4FC),\n        colorScheme: ColorScheme.fromSeed(\n          seedColor: const Color(0xFF9C7AC7),\n        ),\n        appBarTheme: const AppBarTheme(\n          backgroundColor: Color(0xFFBFA2DB),\n          foregroundColor: Colors.white,\n          centerTitle: true,\n          elevation: 2,\n        ),\n        cardTheme: const CardThemeData(\n          color: Color(0xFFF0E6F7),\n          elevation: 2,\n          margin: EdgeInsets.symmetric(\n            horizontal: 12,\n            vertical: 7,\n          ),\n        ),\n      ),\n      home: const ApiHomePage(),\n    );\n  }\n}\n\nclass ApiHomePage extends StatefulWidget {\n  const ApiHomePage({super.key});\n\n  @override\n  State<ApiHomePage> createState() => _ApiHomePageState();\n}\n\nclass _ApiHomePageState extends State<ApiHomePage> {\n  List<dynamic> posts = [];\n  bool isLoading = true;\n  String errorMessage = '';\n\n  @override\n  void initState() {\n    super.initState();\n    fetchData();\n  }\n\n  Future<void> fetchData() async {\n    setState(() {\n      isLoading = true;\n      errorMessage = '';\n    });\n\n    try {\n      final response = await http.get(\n        Uri.parse('https://jsonplaceholder.typicode.com/posts'),\n      );\n\n      if (response.statusCode == 200) {\n        final data = jsonDecode(response.body);\n        setState(() {\n          posts = data;\n          isLoading = false;\n        });\n      } else {\n        setState(() {\n          errorMessage = 'Failed to load data';\n          isLoading = false;\n        });\n      }\n    } catch (e) {\n      setState(() {\n        errorMessage = 'Network error. Please try again.';\n        isLoading = false;\n      });\n    }\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\n          'REST API Posts',\n          style: TextStyle(fontWeight: FontWeight.bold),\n        ),\n      ),\n      body: isLoading\n          ? const Center(\n              child: CircularProgressIndicator(\n                color: Color(0xFF9C7AC7),\n              ),\n            )\n          : errorMessage.isNotEmpty\n              ? Center(\n                  child: Column(\n                    mainAxisAlignment: MainAxisAlignment.center,\n                    children: [\n                      const Icon(\n                        Icons.error_outline,\n                        size: 60,\n                        color: Color(0xFF9C7AC7),\n                      ),\n                      const SizedBox(height: 15),\n                      Text(\n                        errorMessage,\n                        style: const TextStyle(\n                          fontSize: 18,\n                          color: Color(0xFF5E4A6E),\n                        ),\n                      ),\n                      const SizedBox(height: 15),\n                      ElevatedButton(\n                        onPressed: fetchData,\n                        style: ElevatedButton.styleFrom(\n                          backgroundColor: const Color(0xFFBFA2DB),\n                          foregroundColor: Colors.white,\n                        ),\n                        child: const Text('Retry'),\n                      ),\n                    ],\n                  ),\n                )\n              : RefreshIndicator(\n                  onRefresh: fetchData,\n                  child: ListView.builder(\n                    itemCount: posts.length,\n                    itemBuilder: (context, index) {\n                      final post = posts[index];\n                      return Card(\n                        child: ListTile(\n                          leading: CircleAvatar(\n                            backgroundColor: const Color(0xFF9C7AC7),\n                            foregroundColor: Colors.white,\n                            child: Text('${post['id']}'),\n                          ),\n                          title: Text(\n                            post['title'],\n                            style: const TextStyle(fontWeight: FontWeight.bold),\n                          ),\n                          subtitle: Text(post['body']),\n                        ),\n                      );\n                    },\n                  ),\n                ),\n    );\n  }\n}\n"}}, "10": {"num": 10, "title": "Configure and Build for Android", "aim": "To configure and build a Flutter application for the Android platform.", "description": "This experiment demonstrates how to configure Flutter for Android development, check connected Android devices, accept Android SDK licenses, run the application on an Android device or emulator, and generate an APK file.", "folder": "Experiment_10_Android_Build_Target", "code": {"lib/main.dart": "import 'package:flutter/material.dart';\n\nvoid main() {\n  runApp(const MyApp());\n}\n\nclass MyApp extends StatelessWidget {\n  const MyApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'Experiment 10',\n      theme: ThemeData(\n        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),\n      ),\n      home: const MyHomePage(),\n    );\n  }\n}\n\nclass MyHomePage extends StatefulWidget {\n  const MyHomePage({super.key});\n\n  @override\n  State<MyHomePage> createState() => _MyHomePageState();\n}\n\nclass _MyHomePageState extends State<MyHomePage> {\n  int _counter = 0;\n\n  void _incrementCounter() {\n    setState(() {\n      _counter++;\n    });\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text('Experiment 10 - Android Target'),\n        backgroundColor: Theme.of(context).colorScheme.inversePrimary,\n      ),\n      body: Center(\n        child: Column(\n          mainAxisAlignment: MainAxisAlignment.center,\n          children: [\n            const Icon(Icons.android, size: 80, color: Colors.green),\n            const SizedBox(height: 20),\n            const Text(\n              'You have pushed the button this many times:',\n              style: TextStyle(fontSize: 16),\n            ),\n            Text(\n              '$_counter',\n              style: const TextStyle(fontSize: 38, fontWeight: FontWeight.bold),\n            ),\n          ],\n        ),\n      ),\n      floatingActionButton: FloatingActionButton(\n        onPressed: _incrementCounter,\n        tooltip: 'Increment',\n        child: const Icon(Icons.add),\n      ),\n    );\n  }\n}\n"}}, "11": {"num": 11, "title": "Add iOS as a Build Target", "aim": "To create a Flutter application with an iOS build target, test the application, and deploy its Flutter Web version using GitHub Pages.", "description": "This experiment demonstrates how a Flutter application can be configured with iOS as a target platform, tested across targets, and deployed on GitHub Pages.", "folder": "Experiment_11_iOS_Build_Target", "code": {"lib/main.dart": "import 'package:flutter/material.dart';\n\nvoid main() => runApp(const MyApp());\n\nclass MyApp extends StatelessWidget {\n  const MyApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'iOS Flutter App',\n      theme: ThemeData(\n        primarySwatch: Colors.deepPurple,\n        scaffoldBackgroundColor: const Color(0xFFF3E5F5),\n      ),\n      home: const HomePage(),\n    );\n  }\n}\n\nclass HomePage extends StatelessWidget {\n  const HomePage({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\n          'iOS Flutter Application',\n          style: TextStyle(color: Colors.white),\n        ),\n        backgroundColor: Colors.deepPurple,\n        centerTitle: true,\n      ),\n      body: Center(\n        child: Column(\n          mainAxisSize: MainAxisSize.min,\n          children: [\n            const Icon(\n              Icons.phone_iphone,\n              size: 80,\n              color: Colors.deepPurple,\n            ),\n            const SizedBox(height: 15),\n            const Text(\n              'Flutter iOS App',\n              style: TextStyle(\n                fontSize: 26,\n                fontWeight: FontWeight.bold,\n                color: Colors.deepPurple,\n              ),\n            ),\n            const SizedBox(height: 10),\n            const Text(\n              'Experiment 11\\nAdd iOS as a Build Target',\n              textAlign: TextAlign.center,\n              style: TextStyle(fontSize: 18),\n            ),\n            const SizedBox(height: 25),\n            ElevatedButton(\n              onPressed: () {\n                ScaffoldMessenger.of(context).showSnackBar(\n                  const SnackBar(\n                    content: Text('Button clicked successfully!'),\n                  ),\n                );\n              },\n              child: const Text('Test Button'),\n            ),\n            const SizedBox(height: 15),\n            const Text(\n              '\u2713 Application Ready',\n              style: TextStyle(\n                color: Colors.green,\n                fontWeight: FontWeight.bold,\n              ),\n            ),\n          ],\n        ),\n      ),\n    );\n  }\n}\n"}}, "12": {"num": 12, "title": "Build Web App using Flutter", "aim": "To develop, run, and build a responsive Flutter application for the Web using Flutter and Chrome.", "description": "This experiment demonstrates how Flutter allows developers to create web applications using the same Flutter framework used for mobile applications. A responsive web application adapts between mobile and desktop web views.", "folder": "Experiment_12_Web_Application", "code": {"lib/main.dart": "import 'package:flutter/material.dart';\n\nvoid main() {\n  runApp(const MyApp());\n}\n\nclass MyApp extends StatelessWidget {\n  const MyApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      debugShowCheckedModeBanner: false,\n      title: 'Flutter Web Application',\n      home: Scaffold(\n        appBar: AppBar(\n          title: const Text('Flutter Web Application'),\n        ),\n        body: LayoutBuilder(\n          builder: (context, constraints) {\n            if (constraints.maxWidth < 600) {\n              return const Center(\n                child: Text(\n                  'Mobile Web Layout',\n                  style: TextStyle(fontSize: 24),\n                ),\n              );\n            }\n            return const Center(\n              child: Text(\n                'Desktop Web Layout',\n                style: TextStyle(fontSize: 30),\n              ),\n            );\n          },\n        ),\n      ),\n    );\n  }\n}\n"}}};
+    let currentExp = 6;
+    let currentDevice = 'mobile';
+    let currentScreen = 'home'; // for navigation app
+
+    // App state holders
+    let counterVal = 0;
+    let animLarge = false;
+    let studentList7 = ['Raj (1)'];
+    let studentList8_sql = [{ id: 1, name: 'Anmol Samual', course: 'Computer Science' }];
+    let studentList8_fb = [{ id: 'doc_1', name: 'Anmol Samual', course: 'Computer Science' }];
+    let apiPosts = [];
+
+    function showSnackBar(msg) {
+      const sb = document.getElementById('snackBar');
+      sb.innerText = msg;
+      sb.style.display = 'block';
+      setTimeout(() => {
+        sb.style.display = 'none';
+      }, 3000);
+    }
+
+    function setDevice(type) {
+      currentDevice = type;
+      document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      const frame = document.getElementById('deviceFrame');
+      frame.className = 'device-frame device-' + type;
+      renderAppScreen();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.info-tab').forEach(t => t.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function selectExp(num) {
+      currentExp = num;
+      currentScreen = 'home';
+      window.location.hash = '/exp' + num;
+      document.querySelectorAll('.exp-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.num == num);
+      });
+      const data = expData[num];
+      document.getElementById('currentTitle').innerText = 'Experiment ' + num + ': ' + data.title;
+      document.getElementById('docAim').innerText = data.aim;
+      document.getElementById('docDescription').innerText = data.description;
+      document.getElementById('docFolder').innerText = data.folder;
+      
+      const repoBase = window.location.pathname.includes('/FlutterLab') ? '/FlutterLab' : '';
+      document.getElementById('directLink').href = repoBase + '/exp' + num + '/';
+
+      // Render Code Files
+      const files = Object.keys(data.code);
+      const codeSelect = document.getElementById('codeFilesSelect');
+      if (files.length > 1) {
+        codeSelect.style.display = 'block';
+        codeSelect.innerHTML = files.map(f => `<button class="btn btn-outline" style="margin-right:8px; padding:4px 10px; font-size:0.8rem;" onclick="displayCode('${f}')">${f}</button>`).join('');
+      } else {
+        codeSelect.style.display = 'none';
+      }
+      displayCode(files[0]);
+
+      renderAppScreen();
+    }
+
+    function displayCode(fileName) {
+      const code = expData[currentExp].code[fileName];
+      document.getElementById('codeDisplay').innerText = code;
+    }
+
+    function renderAppScreen() {
+      const screen = document.getElementById('screenContent');
+      const width = document.getElementById('deviceFrame').clientWidth;
+      const isMobile = width < 550;
+
+      switch(currentExp) {
+        case 1:
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#3F51B5; justify-content:center;">
+              Student Profile
+            </div>
+            <div style="padding:16px; flex:1; overflow-y:auto;">
+              <div style="background:#3F51B5; color:white; border-radius:15px; padding:20px; margin-bottom:15px; text-align:center; box-shadow:0 3px 6px rgba(0,0,0,0.2);">
+                <div style="width:80px; height:80px; background:white; border-radius:50%; margin:0 auto 12px; display:flex; align-items:center; justify-content:center;">
+                  <span class="material-icons" style="font-size:50px; color:#3F51B5;">person</span>
+                </div>
+                <h3 style="font-size:22px; margin-bottom:5px;">ARSATH AHAMED URK23CS1203</h3>
+                <p style="color:#E0E0E0; font-size:15px;">Computer Science and Engineering</p>
+                <p style="color:#E0E0E0; font-size:14px; margin-top:3px;">Flutter Laboratory</p>
+              </div>
+
+              <div class="fl-card" style="display:flex; justify-content:space-around; padding:18px;">
+                <span class="material-icons" style="font-size:32px; color:#2196F3;">home</span>
+                <span class="material-icons" style="font-size:32px; color:#4CAF50;">person</span>
+                <span class="material-icons" style="font-size:32px; color:#FF9800;">settings</span>
+              </div>
+
+              <h4 style="color:#3F51B5; margin:16px 4px 8px; font-size:18px;">Subjects</h4>
+
+              <div class="fl-card" style="background:#E3F2FD; display:flex; align-items:center; gap:16px; margin:8px 0;">
+                <div class="fl-avatar" style="background:#2196F3;"><span class="material-icons">menu_book</span></div>
+                <div>
+                  <strong>Flutter</strong>
+                  <div style="font-size:13px; color:#666;">Mobile Application Development</div>
+                </div>
+              </div>
+
+              <div class="fl-card" style="background:#E8F5E9; display:flex; align-items:center; gap:16px; margin:8px 0;">
+                <div class="fl-avatar" style="background:#4CAF50;"><span class="material-icons">cloud</span></div>
+                <div>
+                  <strong>Cloud Computing</strong>
+                  <div style="font-size:13px; color:#666;">Cloud Technologies and Services</div>
+                </div>
+              </div>
+
+              <div class="fl-card" style="background:#FFF3E0; display:flex; align-items:center; gap:16px; margin:8px 0;">
+                <div class="fl-avatar" style="background:#FF9800;"><span class="material-icons">code</span></div>
+                <div>
+                  <strong>Programming</strong>
+                  <div style="font-size:13px; color:#666;">Programming Fundamentals</div>
+                </div>
+              </div>
+
+              <div style="background:#673AB7; color:white; border-radius:12px; padding:14px; text-align:center; font-weight:bold; margin-top:14px;">
+                Welcome to Flutter Laboratory!
+              </div>
+            </div>
+          `;
+          break;
+
+        case 2:
+          const isMobileLayout = currentDevice === 'mobile';
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#D0BCFF; color:#381E72;">
+              Adaptive and Responsive UI
+            </div>
+            <div style="padding:16px; flex:1;">
+              <div style="margin-bottom:12px; font-size:13px; color:#666; text-align:center;">
+                Current: <b>${isMobileLayout ? 'Mobile Layout (< 600px)' : 'Desktop / Tablet Layout (≥ 600px)'}</b>
+              </div>
+              <div style="display:${isMobileLayout ? 'flex' : 'flex'}; flex-direction:${isMobileLayout ? 'column' : 'row'}; gap:12px;">
+                <div class="fl-card" style="flex:1; display:flex; align-items:center; gap:14px; margin:4px;">
+                  <span class="material-icons" style="font-size:32px; color:#6750A4;">${isMobileLayout ? 'person' : 'people'}</span>
+                  <div>
+                    <strong>${isMobileLayout ? 'Student' : 'Students'}</strong>
+                    <div style="font-size:12px; color:#666;">${isMobileLayout ? 'Mobile Layout' : 'Desktop / Tablet Layout'}</div>
+                  </div>
+                </div>
+                <div class="fl-card" style="flex:1; display:flex; align-items:center; gap:14px; margin:4px;">
+                  <span class="material-icons" style="font-size:32px; color:#6750A4;">${isMobileLayout ? 'menu_book' : 'school'}</span>
+                  <div>
+                    <strong>Courses</strong>
+                    <div style="font-size:12px; color:#666;">${isMobileLayout ? 'Mobile Layout' : 'Desktop / Tablet Layout'}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 3:
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#2196F3; justify-content:center;">
+              Student Registration
+            </div>
+            <div style="padding:20px; flex:1; display:flex; align-items:center; justify-content:center;">
+              <div class="fl-card" style="width:100%; text-align:center; padding:24px;">
+                <span class="material-icons" style="font-size:60px; color:#2196F3; margin-bottom:10px;">school</span>
+                <h3 style="margin-bottom:20px;">Create Student Account</h3>
+                <input type="text" id="stuName" class="fl-input" placeholder="Student Name" />
+                <input type="email" id="stuEmail" class="fl-input" placeholder="Email" />
+                <input type="password" id="stuPass" class="fl-input" placeholder="Password" />
+                <button class="fl-btn btn-primary" style="width:100%; justify-content:center; background:#2196F3;" onclick="submitExp3Form()">
+                  Submit
+                </button>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 4:
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#02569B;">Flutter Assets and Media</div>
+            <div style="padding:20px; text-align:center; flex:1; overflow-y:auto;">
+              <h2 style="font-size:24px; font-weight:bold; margin-bottom:20px;">Hello World</h2>
+              
+              <h4 style="font-size:18px; margin-bottom:10px;">Image Asset</h4>
+              <div style="width:200px; height:160px; background:#E1F5FE; border-radius:16px; margin:0 auto 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:2px dashed #0288D1;">
+                <span class="material-icons" style="font-size:64px; color:#0288D1;">flutter_dash</span>
+                <span style="font-size:12px; font-weight:bold; color:#0288D1; margin-top:6px;">assets/images/flutter.png</span>
+              </div>
+
+              <h4 style="font-size:18px; margin-bottom:10px;">Video Asset</h4>
+              <div style="width:100%; max-width:320px; height:180px; background:#212121; border-radius:12px; margin:0 auto 16px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
+                <span class="material-icons" style="font-size:56px; color:#03A9F4;">videocam</span>
+                <div style="font-size:13px; color:#B0BEC5; margin-top:8px;">assets/video/sample.mp4</div>
+              </div>
+              <button class="fl-btn btn-primary" style="background:#0288D1;" onclick="showSnackBar('Playing sample video asset...')">
+                <span class="material-icons">play_arrow</span> Play Video
+              </button>
+            </div>
+          `;
+          break;
+
+        case 5:
+          if (currentScreen === 'home') {
+            screen.innerHTML = `
+              <div class="fl-appbar" style="background:#9C27B0; justify-content:center;">Home</div>
+              <div style="flex:1; background:linear-gradient(135deg, #9C27B0, #E91E63, #03A9F4); display:flex; align-items:center; justify-content:center; padding:20px;">
+                <div class="fl-card" style="text-align:center; padding:30px; border-radius:24px; width:100%;">
+                  <span class="material-icons" style="font-size:70px; color:#9C27B0;">home</span>
+                  <h3 style="color:#9C27B0; margin:16px 0 8px; font-size:24px;">Welcome Home!</h3>
+                  <p style="color:#777; font-size:14px; margin-bottom:24px;">Explore the different screens</p>
+                  <button class="fl-btn" style="background:#E91E63; color:white; width:100%; justify-content:center;" onclick="currentScreen='profile'; renderAppScreen();">
+                    <span class="material-icons">person</span> Go to Profile
+                  </button>
+                </div>
+              </div>
+            `;
+          } else if (currentScreen === 'profile') {
+            screen.innerHTML = `
+              <div class="fl-appbar" style="background:#E91E63; justify-content:center;">Profile</div>
+              <div style="flex:1; background:linear-gradient(135deg, #E91E63, #9C27B0, #03A9F4); display:flex; align-items:center; justify-content:center; padding:20px;">
+                <div class="fl-card" style="text-align:center; padding:30px; border-radius:24px; width:100%;">
+                  <div class="fl-avatar" style="width:70px; height:70px; background:#E91E63; margin:0 auto 16px;">
+                    <span class="material-icons" style="font-size:42px;">person</span>
+                  </div>
+                  <h3 style="color:#9C27B0; font-size:24px; margin-bottom:8px;">Student Profile</h3>
+                  <p style="color:#777; font-size:14px; margin-bottom:24px;">Welcome to your profile page!</p>
+                  <button class="fl-btn" style="background:#03A9F4; color:white; width:100%; justify-content:center;" onclick="currentScreen='details'; renderAppScreen();">
+                    <span class="material-icons">info</span> View Details
+                  </button>
+                </div>
+              </div>
+            `;
+          } else if (currentScreen === 'details') {
+            screen.innerHTML = `
+              <div class="fl-appbar" style="background:#03A9F4; justify-content:center;">Details</div>
+              <div style="flex:1; background:linear-gradient(135deg, #03A9F4, #9C27B0, #E91E63); display:flex; align-items:center; justify-content:center; padding:20px;">
+                <div class="fl-card" style="text-align:center; padding:30px; border-radius:24px; width:100%;">
+                  <span class="material-icons" style="font-size:70px; color:#03A9F4;">school</span>
+                  <h3 style="color:#9C27B0; font-size:24px; margin:16px 0;">Student Details</h3>
+                  <p style="font-size:15px; line-height:1.7; color:#333; margin-bottom:24px;">
+                    Name: Arsath Ahamed URK23CS1203<br>
+                    Course: Computer Science<br>
+                    Department: CSE
+                  </p>
+                  <button class="fl-btn" style="background:#9C27B0; color:white; width:100%; justify-content:center;" onclick="currentScreen='profile'; renderAppScreen();">
+                    <span class="material-icons">arrow_back</span> Back to Profile
+                  </button>
+                </div>
+              </div>
+            `;
+          }
+          break;
+
+        case 6:
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#673AB7; justify-content:center;">Flutter Animations</div>
+            <div style="flex:1; background:#EDE7F6; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+              <div id="animBox" style="
+                width:${animLarge ? '260px' : '140px'};
+                height:${animLarge ? '260px' : '140px'};
+                border-radius:${animLarge ? '45px' : '18px'};
+                background:#B39DDB;
+                box-shadow:0 8px 24px rgba(0,0,0,0.18);
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                color:white;
+                font-size:${animLarge ? '32px' : '22px'};
+                font-weight:bold;
+                transition:all 1s cubic-bezier(0.4, 0, 0.2, 1);
+              ">
+                Flutter
+              </div>
+              <div style="margin-top:35px;">
+                <button class="fl-btn" style="background:#673AB7; color:white; padding:14px 32px;" onclick="toggleAnimExp6()">
+                  <span class="material-icons">animation</span> Animate
+                </button>
+              </div>
+              <div style="margin-top:16px; color:#673AB7; font-weight:600;">
+                ${animLarge ? 'Widget is Large' : 'Widget is Small'}
+              </div>
+            </div>
+          `;
+          break;
+
+        case 7:
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#4A148C;">Student State Management</div>
+            <div style="padding:16px; flex:1; display:flex; flex-direction:column;">
+              <button class="fl-btn" style="background:#4A148C; color:white; margin:0 auto 16px;" onclick="addExp7Student()">
+                <span class="material-icons">add</span> Add Student
+              </button>
+              <div style="flex:1; overflow-y:auto;">
+                ${studentList7.map((name, i) => `
+                  <div class="fl-card" style="display:flex; align-items:center; gap:14px; margin:6px 0;">
+                    <div class="fl-avatar" style="background:#7B1FA2;">${i+1}</div>
+                    <div>
+                      <strong>${name}</strong>
+                      <div style="font-size:12px; color:#666;">Course: CSE (JSON Serialized)</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+          break;
+
+        case 8:
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#303F9F; justify-content:center;">Student Data Persistence</div>
+            <div style="padding:16px; flex:1; overflow-y:auto;">
+              <h3 style="text-align:center; font-size:20px; font-weight:bold;">SQLite + Firebase</h3>
+              <p style="text-align:center; font-size:12px; color:#666; margin-bottom:14px;">Web: SQLite WASM + Firebase</p>
+
+              <div class="fl-card">
+                <h4 style="margin-bottom:12px;">Add Student</h4>
+                <input type="text" id="exp8Name" class="fl-input" placeholder="Student Name" style="padding:10px;" />
+                <input type="text" id="exp8Course" class="fl-input" placeholder="Course" style="padding:10px;" />
+                <button class="fl-btn btn-primary" style="background:#303F9F; width:100%; justify-content:center;" onclick="addExp8Student()">
+                  Save to SQLite + Firebase
+                </button>
+              </div>
+
+              <h4 style="margin:16px 4px 8px; color:#303F9F;">SQLite - Local Storage</h4>
+              ${studentList8_sql.map(s => `
+                <div class="fl-card" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; margin:6px 0;">
+                  <div>
+                    <strong>${s.name}</strong>
+                    <div style="font-size:12px; color:#666;">${s.course}</div>
+                  </div>
+                  <span class="material-icons" style="color:#E53935; cursor:pointer;" onclick="deleteExp8Student(${s.id})">delete</span>
+                </div>
+              `).join('')}
+
+              <h4 style="margin:20px 4px 8px; color:#E65100;">Firebase - Cloud Storage</h4>
+              ${studentList8_fb.map(s => `
+                <div class="fl-card" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; margin:6px 0;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="material-icons" style="color:#FFA000;">cloud</span>
+                    <div>
+                      <strong>${s.name}</strong>
+                      <div style="font-size:12px; color:#666;">${s.course}</div>
+                    </div>
+                  </div>
+                  <span class="material-icons" style="color:#E53935; cursor:pointer;" onclick="deleteExp8Student('${s.id}')">delete</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+          break;
+
+        case 9:
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#BFA2DB; color:white;">REST API Posts</div>
+            <div id="postsContainer" style="padding:12px; flex:1; overflow-y:auto;">
+              <div style="text-align:center; padding:40px;">
+                <span class="material-icons" style="font-size:48px; color:#9C7AC7; animation:spin 1s infinite linear;">refresh</span>
+                <p style="margin-top:10px; color:#666;">Fetching live data from JSONPlaceholder...</p>
+              </div>
+            </div>
+          `;
+          fetchExp9Posts();
+          break;
+
+        case 10:
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#6750A4;">Experiment 10 - Android Target</div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative;">
+              <span class="material-icons" style="font-size:70px; color:#4CAF50; margin-bottom:16px;">android</span>
+              <p style="font-size:15px; color:#555;">You have pushed the button this many times:</p>
+              <h1 style="font-size:42px; font-weight:bold; margin-top:8px;">${counterVal}</h1>
+              <button style="position:absolute; bottom:24px; right:24px; width:56px; height:56px; border-radius:16px; background:#6750A4; color:white; border:none; box-shadow:0 4px 10px rgba(0,0,0,0.3); cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="counterVal++; renderAppScreen();">
+                <span class="material-icons">add</span>
+              </button>
+            </div>
+          `;
+          break;
+
+        case 11:
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#673AB7; justify-content:center;">iOS Flutter Application</div>
+            <div style="flex:1; background:#F3E5F5; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
+              <span class="material-icons" style="font-size:80px; color:#673AB7; margin-bottom:12px;">phone_iphone</span>
+              <h2 style="font-size:24px; color:#673AB7; font-weight:bold; margin-bottom:6px;">Flutter iOS App</h2>
+              <p style="font-size:15px; color:#555; margin-bottom:20px;">Experiment 11<br>Add iOS as a Build Target</p>
+              <button class="fl-btn" style="background:#673AB7; color:white;" onclick="showSnackBar('Button clicked successfully!')">
+                Test Button
+              </button>
+              <div style="color:#2E7D32; font-weight:bold; margin-top:16px; display:flex; align-items:center; gap:4px;">
+                <span class="material-icons" style="font-size:18px;">check_circle</span> Application Ready
+              </div>
+            </div>
+          `;
+          break;
+
+        case 12:
+          const isWebMobile = currentDevice === 'mobile';
+          screen.innerHTML = `
+            <div class="fl-appbar" style="background:#2196F3;">Flutter Web Application</div>
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; background:#FAFAFA;">
+              <h2 style="font-size:${isWebMobile ? '24px' : '32px'}; color:#1976D2; font-weight:bold; text-align:center;">
+                ${isWebMobile ? 'Mobile Web Layout' : 'Desktop Web Layout'}
+              </h2>
+            </div>
+          `;
+          break;
+      }
+    }
+
+    function submitExp3Form() {
+      const name = document.getElementById('stuName').value.trim();
+      if (!name) {
+        showSnackBar('Enter student name');
+        return;
+      }
+      showSnackBar('Form submitted successfully');
+    }
+
+    function toggleAnimExp6() {
+      animLarge = !animLarge;
+      renderAppScreen();
+    }
+
+    function addExp7Student() {
+      studentList7.push('Raj (' + (studentList7.length + 1) + ')');
+      renderAppScreen();
+    }
+
+    function addExp8Student() {
+      const name = document.getElementById('exp8Name').value.trim();
+      const course = document.getElementById('exp8Course').value.trim();
+      if (!name || !course) {
+        showSnackBar('Please enter student name and course');
+        return;
+      }
+      const newId = studentList8_sql.length + 1;
+      studentList8_sql.push({ id: newId, name, course });
+      studentList8_fb.push({ id: 'doc_' + newId, name, course });
+      showSnackBar('Student saved to SQLite and Firebase');
+      renderAppScreen();
+    }
+
+    function deleteExp8Student(id) {
+      studentList8_sql = studentList8_sql.filter(s => s.id !== id);
+      studentList8_fb = studentList8_fb.filter(s => s.id !== id);
+      renderAppScreen();
+    }
+
+    async function fetchExp9Posts() {
+      try {
+        if (apiPosts.length === 0) {
+          const res = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=10');
+          apiPosts = await res.json();
+        }
+        const container = document.getElementById('postsContainer');
+        if (container) {
+          container.innerHTML = apiPosts.map(p => `
+            <div class="fl-card" style="background:#F0E6F7; margin:8px 0; padding:12px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+                <div class="fl-avatar" style="background:#9C7AC7; width:28px; height:28px; font-size:12px;">${p.id}</div>
+                <strong style="font-size:14px; text-transform:capitalize;">${p.title}</strong>
+              </div>
+              <p style="font-size:13px; color:#555; line-height:1.4;">${p.body}</p>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        const container = document.getElementById('postsContainer');
+        if (container) {
+          container.innerHTML = '<div style="text-align:center; padding:20px; color:red;">Failed to load live data</div>';
+        }
+      }
+    }
+
+    // Initialize sidebar
+    const list = document.getElementById('expList');
+    list.innerHTML = Object.keys(expData).map(num => `
+      <div class="exp-item ${num == currentExp ? 'active' : ''}" data-num="${num}" onclick="selectExp(${num})">
+        <span class="exp-badge">${num}</span>
+        <span>${expData[num].title}</span>
+      </div>
+    `).join('');
+
+    // Check hash for direct route
+    const hashMatch = window.location.hash.match(/#\/exp(\d+)/);
+    if (hashMatch) {
+      currentExp = parseInt(hashMatch[1]);
+    }
+
+    selectExp(currentExp);
+  </script>
+</body>
+</html>
